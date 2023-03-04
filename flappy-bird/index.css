@@ -1,0 +1,11 @@
+body {
+    margin: 50;
+    padding: 0;
+  }
+  
+canvas {
+    display: block;
+    margin: 20 auto;
+    background-image: url("./images/background.png");
+    background-size: cover;
+}
