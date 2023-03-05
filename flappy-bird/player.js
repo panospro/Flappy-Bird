@@ -7,20 +7,13 @@ class Player {
     this.velocity = velocity;
 
     this.image = new Image();
-    this.image.src = "path/to/player_image.png";
+    this.image.src = "./images/bird.png";
     this.image.onload = () => {
       this.loaded = true;
     };
   }
 
-  // Draw the player as a circle
-  // draw(ctx) {
-  //   ctx.beginPath();
-  //   ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
-  //   ctx.fillStyle = "#000000";
-  //   ctx.fill();
-  // }
-
+  // Draw the player as a bird
   draw(ctx) {
     if (this.loaded) {
       ctx.drawImage(this.image, this.x - this.radius, this.y - this.radius, this.radius * 2, this.radius * 2);
