@@ -79,7 +79,24 @@ function gameLoop() {
   requestAnimationFrame(gameLoop);
 }
 
-// Handle player input
+// Handle player input with spacebar
+document.addEventListener("keydown", function(event) {
+  if (event.code === "Space" && !isGameOver && hitGroundGameOver != 1) {
+    player.jump();
+  } else {
+    // Reset the game if the player clicks after game over
+    hitGroundGameOver = 0;
+    player.x = canvas.width / 2;
+    player.y = canvas.height / 2 - 150;
+    player.velocity = 0;
+    obstacles.splice(0, obstacles.length);
+    score = 0;
+    isGameOver = false;
+    requestAnimationFrame(gameLoop);
+  }
+});
+
+// Handle player input with click
 canvas.addEventListener("click", function() {
   if (!isGameOver && hitGroundGameOver != 1) {
     player.jump();
