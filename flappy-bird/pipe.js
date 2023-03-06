@@ -3,7 +3,7 @@ class Pipe {
     constructor(x, height, isTopPipe) {
         this.x = x;
         // If its a top-to-bottom pipe y will be set to 0, else to canvas.height-height 
-        this.y = isTopPipe ? 0 : canvas.height - height; 
+        this.y = isTopPipe ? 0 : canvas.height - height;  /* eslint-disable no-undef */
         this.width = 80;
         this.height = height;
 
