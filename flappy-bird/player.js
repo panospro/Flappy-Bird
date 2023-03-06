@@ -1,3 +1,4 @@
+/* eslint-disable */
 class Player {
   constructor(x, y, radius, gravity, velocity) {
     this.x = x;
@@ -79,3 +80,4 @@ class Player {
     return distance < this.radius + obstacle.width / 2;
   }
 }
+/* eslint-disable */

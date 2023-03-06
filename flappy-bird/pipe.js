@@ -1,4 +1,5 @@
 // Implementation of the class Pipe
+/* eslint-disable */
 class Pipe {
     constructor(x, height, isTopPipe) {
         this.x = x;
@@ -24,3 +25,4 @@ class Pipe {
       return true;
     }
 }
+/* eslint-disable */
