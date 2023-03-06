@@ -3,7 +3,7 @@ const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
 // Set up the game variables
-const p1 = new Player(canvas.width / 2, canvas.height / 2, 20, 0.65, 0);
+const ar = new Player(canvas.width / 2, canvas.height / 2, 20, 0.65, 0);
 let score = 0;
 let isGameOver = false;
 let frameCount = 0;
@@ -20,11 +20,11 @@ function gameLoop() {
   // Clear the canvas
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   
-  // Update the player's position
-  p1.update();
+  // Update the ar's position
+  ar.update();
 
-  // Draw the player
-  p1.draw(ctx);
+  // Draw the ar
+  ar.draw(ctx);
 
   // Generate a new pipe every 100 frames
   if (frameCount % 150 === 0) {
@@ -45,7 +45,7 @@ function gameLoop() {
       obstacles.splice(i, 1);
     }
 
-    if (obstacles[i].x + obstacles[i].width < p1.x - 10 && !obstacles[i].scored) {
+    if (obstacles[i].x + obstacles[i].width < ar.x - 10 && !obstacles[i].scored) {
       score += 0.5;
       obstacles[i].scored = true;
     }
@@ -54,7 +54,7 @@ function gameLoop() {
     obstacles[i].x -= 2;
     obstacles[i].draw(ctx);
   
-    if (obstacles[i].collidesWith(p1)) {
+    if (obstacles[i].collidesWith(ar)) {
       isGameOver = true;
     }
   }
@@ -65,12 +65,12 @@ function gameLoop() {
   ctx.fillText(`Score: ${score}`, 10, 50);
 
   // Check for game over
-  if (p1.y > canvas.height || isGameOver) {
+  if (ar.y > canvas.height || isGameOver) {
     ctx.fillStyle = "#000000"; // set the fill style to black
     ctx.font = "60px Arial";
     ctx.fillText("Game Over", canvas.width / 2 - 150, canvas.height / 2);
 
-    // Check if the player lost by hitting the ground
+    // Check if the ar lost by hitting the ground
     hitGroundGameOver = 1;
     return;
   }
@@ -79,16 +79,16 @@ function gameLoop() {
   requestAnimationFrame(gameLoop);
 }
 
-// Handle player input with spacebar
+// Handle ar input with spacebar
 document.addEventListener("keydown", function(event) {
   if (event.code === "Space" && !isGameOver && hitGroundGameOver != 1) {
-    p1.jump();
+    ar.jump();
   } else {
-    // Reset the game if the player clicks after game over
+    // Reset the game if the ar clicks after game over
     hitGroundGameOver = 0;
-    p1.x = canvas.width / 2;
-    p1.y = canvas.height / 2 - 150;
-    p1.velocity = 0;
+    ar.x = canvas.width / 2;
+    ar.y = canvas.height / 2 - 150;
+    ar.velocity = 0;
     obstacles.splice(0, obstacles.length);
     score = 0;
     isGameOver = false;
@@ -96,16 +96,16 @@ document.addEventListener("keydown", function(event) {
   }
 });
 
-// Handle player input with click
+// Handle ar input with click
 canvas.addEventListener("click", function() {
   if (!isGameOver && hitGroundGameOver != 1) {
-    p1.jump();
+    ar.jump();
   } else {
-    // Reset the game if the player clicks after game over
+    // Reset the game if the ar clicks after game over
     hitGroundGameOver = 0;
-    p1.x = canvas.width / 2;
-    p1.y = canvas.height / 2 - 150;
-    p1.velocity = 0;
+    ar.x = canvas.width / 2;
+    ar.y = canvas.height / 2 - 150;
+    ar.velocity = 0;
     obstacles.splice(0, obstacles.length);
     score = 0;
     isGameOver = false;
