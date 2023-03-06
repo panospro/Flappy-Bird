@@ -3,7 +3,8 @@ const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
 // Set up the game variables
-const player = new Player(canvas.width / 2, canvas.height / 2, 20, 0.65, 0); /* eslint-disable no-undef */
+/* eslint-disable no-undef */
+const player = new Player(canvas.width / 2, canvas.height / 2, 20, 0.65, 0);
 let score = 0;
 let isGameOver = false;
 let frameCount = 0;
