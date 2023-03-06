@@ -3,7 +3,7 @@ const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
 // Set up the game variables
-const player = new Player(canvas.width / 2, canvas.height / 2, 20, 0.65, 0);
+const player = new Player(canvas.width / 2, canvas.height / 2, 20, 0.65, 0); /* eslint-disable no-undef */
 let score = 0;
 let isGameOver = false;
 let frameCount = 0;
@@ -33,8 +33,8 @@ function gameLoop() {
     const maxheight = canvas.height - minheight - gap;
     const height1 = Math.floor(Math.random() * (maxheight - minheight + 1) + minheight);
     const height2 = canvas.height - height1 - gap;
-    const pipe1 = new Pipe(canvas.width, height1, true);
-    const pipe2 = new Pipe(canvas.width , height2, false);
+    const pipe1 = new Pipe(canvas.width, height1, true);  /* eslint-disable no-undef */
+    const pipe2 = new Pipe(canvas.width , height2, false);  /* eslint-disable no-undef */
     obstacles.push(pipe1);
     obstacles.push(pipe2);
   }
