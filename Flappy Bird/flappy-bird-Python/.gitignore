@@ -1,0 +1,3 @@
+# ignore Python bytecode files and cache directories
+__pycache__/
+*.cpython-38
