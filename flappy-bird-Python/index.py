@@ -2,7 +2,7 @@ import pygame
 import random
 import os
 from bird import Bird
-
+from pipe import Pipe
 # set up game window
 WIDTH = 600
 HEIGHT = 800
@@ -17,8 +17,8 @@ clock = pygame.time.Clock()
 game_folder = os.path.dirname(__file__)
 snd_folder = os.path.join(game_folder, "snd")
 background_img = pygame.image.load("flappy-bird-Python/images/background.png").convert()
-bird_img = pygame.image.load("flappy-bird-Python/images/bird.png").convert_alpha()
-pipe_img = pygame.image.load("flappy-bird-Python/images/fullPipeBottom.png").convert_alpha()
+# bird_img = pygame.image.load("flappy-bird-Python/images/bird.png").convert_alpha()
+# pipe_img = pygame.image.load("flappy-bird-Python/images/fullPipeBottom.png").convert_alpha()
 # hit_sound = pygame.mixer.Sound(os.path.join(snd_folder, "hit.wav"))
 # point_sound = pygame.mixer.Sound(os.path.join(snd_folder, "point.wav"))
 # jump_sound = pygame.mixer.Sound(os.path.join(snd_folder, "wing.wav"))
@@ -29,23 +29,6 @@ bird_velocity = 0
 pipe_gap = 100
 pipe_frequency = 120
 score = 0
-
-class Pipe(pygame.sprite.Sprite):
-    def __init__(self, height):
-        pygame.sprite.Sprite.__init__(self)
-        self.image = pipe_img
-        self.rect = self.image.get_rect()
-        self.rect.x = WIDTH
-        self.rect.y = height
-        self.speed = -4
-    
-    def update(self):
-        self.rect.x += self.speed
-        if self.rect.right < 0:
-            self.kill()
-    
-    def get_height(self):
-        return self.rect.y + self.rect.height
 
 # define game functions
 def draw_text(text, size, x, y):

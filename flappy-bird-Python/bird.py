@@ -13,7 +13,7 @@ pygame.display.set_caption("Flappy Bird")
 # load bird image
 bird_img = pygame.image.load("flappy-bird-Python/images/bird.png").convert_alpha()
 
-# define classes
+# Define the bird class
 class Bird(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
