@@ -73,6 +73,9 @@ function gameLoop() {
 
     // Check if the player lost by hitting the ground
     hitGroundGameOver = 1;
+
+    // Set isGameOver to true
+    isGameOver = true;
     return;
   }
 
@@ -84,7 +87,7 @@ function gameLoop() {
 document.addEventListener("keydown", function(event) {
   if (event.code === "Space" && !isGameOver && hitGroundGameOver != 1) {
     player.jump();
-  } else {
+  } else if(isGameOver && event.code === "Space") {
     // Reset the game if the player clicks after game over
     hitGroundGameOver = 0;
     player.x = canvas.width / 2;
@@ -101,7 +104,7 @@ document.addEventListener("keydown", function(event) {
 canvas.addEventListener("click", function() {
   if (!isGameOver && hitGroundGameOver != 1) {
     player.jump();
-  } else {
+  } else if(isGameOver) {
     // Reset the game if the player clicks after game over
     hitGroundGameOver = 0;
     player.x = canvas.width / 2;
