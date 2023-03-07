@@ -4,13 +4,12 @@ import pygame
 pygame.init()
 
 # set up the window
-window_width = 500
-window_height = 500
+window_width = 600
+window_height = 800
 screen = pygame.display.set_mode((window_width, window_height))
 
 # load the background image
-background_image = pygame.image.load("background.png")
-
+background_image = pygame.image.load("Flappy Bird/flappy-bird-Python/images/background.png")
 
 # draw the background image onto the window surface
 screen.blit(background_image, (0, 0))
