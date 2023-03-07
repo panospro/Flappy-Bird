@@ -3,7 +3,7 @@ import pygame
 # set up game window
 WIDTH = 600
 HEIGHT = 800
-gravity = 0.25
+gravity = 0.5
 
 pygame.init()
 # pygame.mixer.init() // for sound
@@ -35,3 +35,6 @@ class Bird(pygame.sprite.Sprite):
     def jump(self):
         self.velocity = -6
         # jump_sound.play()
+
+    def draw(self, screen):
+        screen.blit(self.image, self.rect)
