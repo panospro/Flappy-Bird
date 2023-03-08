@@ -73,8 +73,6 @@ HEIGHT = 800
 gravity = 0.25
 
 pygame.init()
-# pygame.mixer.init() // for sound
-# screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Flappy Bird")
 
 # load pipe image
@@ -83,12 +81,19 @@ pipe_img_bottom = pygame.image.load("flappy-bird-Python/images/fullPipeBottom.pn
 
 # Define the pipe class
 class Pipe(pygame.sprite.Sprite):
-    def __init__(self, height):
+    def __init__(self, height, is_top):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pipe_img_top
+        if is_top:
+            self.image = pipe_img_top
+        else:
+            self.image = pipe_img_bottom
         self.rect = self.image.get_rect()
         self.rect.x = WIDTH
-        self.rect.y = height - self.rect.height
+        if is_top:
+            self.rect.y = height
+
+        else:
+            self.rect.y = height
         self.speed = -4
         self.scored = False
     
@@ -98,7 +103,7 @@ class Pipe(pygame.sprite.Sprite):
             self.kill()
     
     def get_height(self):
-        return self.rect.y + self.rect.height
+        return self.rect.bottom
 
 class PipePair(pygame.sprite.Group):
     def __init__(self):
@@ -106,14 +111,15 @@ class PipePair(pygame.sprite.Group):
         self.pipe_gap = 150
         self.pipe_frequency = 120
         self.score = 0
+        self.pipes_passed = 0  # initialize number of pipes passed to 0
     
     def spawn_pipes(self):
         pipe_heights = [150, 200, 250, 300]
         pipe_height = random.choice(pipe_heights)
-        top_pipe = Pipe(pipe_height - self.pipe_gap -320)
-        bottom_pipe = Pipe(pipe_height + self.pipe_gap)
-        self.add(top_pipe)
-        self.add(bottom_pipe)
+        top_pipe = Pipe(pipe_height - self.pipe_gap -650, True)
+        bottom_pipe = Pipe(pipe_height + self.pipe_gap, False)
+        self.add(top_pipe, bottom_pipe)
+        
         
     def update(self, bird):
         pygame.sprite.Group.update(self)
@@ -121,9 +127,11 @@ class PipePair(pygame.sprite.Group):
             self.spawn_pipes()
         for pipe in self.sprites():
             if bird.rect.left > pipe.rect.right and not pipe.scored:
-                self.score += 1
+                self.pipes_passed += 1
                 pipe.scored = True
-                # play score sound here
+                if self.pipes_passed % 2 == 0:
+                    self.score += 1
+                
         for pipe in self.sprites():
             if pipe.rect.right < 0:
                 self.remove(pipe)

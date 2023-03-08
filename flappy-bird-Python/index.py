@@ -216,10 +216,10 @@
 #     # update the display
 #     pygame.display.flip()
 
-# # quit the game
+# # quit the game 
 # pygame.quit()
 
-import pygame
+import pygame 
 from bird import Bird
 from pipe import PipePair
 
@@ -242,6 +242,9 @@ pipes = PipePair()
 
 # set up clock
 clock = pygame.time.Clock()
+
+# set up font
+font = pygame.font.SysFont(None, 48)
 
 # game loop
 running = True
@@ -267,7 +270,11 @@ while running:
 
     # draw game objects
     bird.draw(screen)
-    pipes.draw(screen)
+    pipes.draw(screen) 
+
+    # draw score
+    score_text = font.render(str(pipes.score), True, (255, 255, 255))
+    screen.blit(score_text, (WIDTH//2, 50))
 
     # update display
     pygame.display.update()
