@@ -83,8 +83,8 @@ from bird import Bird
 from pipepair import PipePair
 
 # Set up the game window
-SCREEN_WIDTH = 288
-SCREEN_HEIGHT = 512
+SCREEN_WIDTH = 600
+SCREEN_HEIGHT = 800
 pygame.init()
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Flappy Bird")
@@ -96,45 +96,69 @@ FPS = 60
 
 # Define the evaluation function
 def eval_genomes(genomes, config):
+    birds = []
+    nets = []
+    ge = []
     for genome_id, genome in genomes:
         net = neat.nn.FeedForwardNetwork.create(genome, config)
-        bird = Bird(SCREEN_WIDTH, SCREEN_HEIGHT)
-        pipes = PipePair(SCREEN_WIDTH, SCREEN_HEIGHT)
+        nets.append(net)
+        bird = Bird()
+        birds.append(bird)
+        genome.fitness = 0
+        ge.append(genome)
 
-        fitness = 0
-        while True:
-            # get the network's output
+    pipes = PipePair()
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+
+        for i, bird in enumerate(birds):
+            # output = nets[i].activate((bird.rect.center[1], abs(bird.rect.center[1] - pipes.bottom), abs(bird.rect.center[1] - pipes.top)))
             if pipes.sprites():
                 bottom_pipe = max(pipes.sprites(), key=lambda pipe: pipe.rect.bottom)
                 top_pipe = min(pipes.sprites(), key=lambda pipe: pipe.rect.top)
-                output = net.activate((bird.rect.center[1], abs(bird.rect.center[1] - bottom_pipe.rect.bottom), abs(bird.rect.center[1] - top_pipe.rect.top)))
+                output = nets[i].activate((bird.rect.center[1], abs(bird.rect.center[1] - bottom_pipe.rect.bottom), abs(bird.rect.center[1] - top_pipe.rect.top)))
+
             else:
-                output = net.activate((bird.rect.center[1], 600, 800))
-            # make the bird jump if the network's output is greater than 0.5
+                output = nets[i].activate((bird.rect.center[1], 600, 800))
             if output[0] > 0.5:
                 bird.jump()
 
-            # update the game objects
+        for bird in birds:
             bird.update()
-            pipes.update()
 
-            # check for collision
-            if bird.check_collision(pipes):
-                genome.fitness = fitness
-                break
+        pipes.update(birds[0])
 
-            # increase fitness for each frame that the bird survives
-            fitness += 1
+        for i, bird in enumerate(birds):
+            if pygame.sprite.spritecollide(bird, pipes, False):
+                ge[i].fitness -= 1
+                nets.pop(i)
+                ge.pop(i)
+                birds.pop(i)
 
-            # update the display
-            screen.blit(bg_img, (0, 0))
+        for i, bird in enumerate(birds):
+            if bird.rect.bottom >= SCREEN_HEIGHT or bird.rect.top <= 0:
+                ge[i].fitness -= 1
+                nets.pop(i)
+                ge.pop(i)
+                birds.pop(i)
+
+        for i, genome in enumerate(ge):
+            genome.fitness += 1
+
+        screen.blit(bg_img, (0, 0))
+        for bird in birds:
             bird.draw(screen)
-            pipes.draw(screen)
-            pygame.display.update()
-            clock.tick(FPS)
+        pipes.draw(screen)
+        pygame.display.update()
+        clock.tick(FPS)
 
-        # set the genome's fitness score
-        genome.fitness = fitness + (pipes.score * 100)
+        if len(birds) == 0:
+            break
+
 
 # Set up the NEAT configuration and population
 config_file = "flappy-bird-Python/config-feedforward.txt"
@@ -155,10 +179,15 @@ print('\nBest genome:\n{!s}'.format(winner))
 
 # Show the winning bird in action
 net = neat.nn.FeedForwardNetwork.create(winner, config)
-bird = Bird(SCREEN_WIDTH, SCREEN_HEIGHT)
-pipes = PipePair(SCREEN_WIDTH, SCREEN_HEIGHT)
+bird = Bird()
+pipes = PipePair()
 while True:
-    output = net.activate((bird.rect.center[1], abs(bird.rect.center[1] - pipes.bottom), abs(bird.rect.center[1] - pipes.top)))
+    if pipes.sprites():
+        bottom_pipe = max(pipes.sprites(), key=lambda pipe: pipe.rect.bottom)
+        top_pipe = min(pipes.sprites(), key=lambda pipe: pipe.rect.top)
+        output = nets[i].activate((bird.rect.center[1], abs(bird.rect.center[1] - bottom_pipe.rect.bottom), abs(bird.rect.center[1] - top_pipe.rect.top)))
+    else:
+        output = nets[i].activate((bird.rect.center[1], 600, 800))
     if output[0] > 0.5:
         bird.jump()
     bird.update()
@@ -166,4 +195,4 @@ while True:
     screen.blit(bg_img, (0, 0))
     bird.draw(screen)
     pipes.draw(screen)
-    pygame.display.update
+    pygame.display.update()
