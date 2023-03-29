@@ -1,127 +1,62 @@
-# def eval_genomes(genomes, config):
-#     for genome_id, genome in genomes:
-#         net = neat.nn.FeedForwardNetwork.create(genome, config)
-#         bird = Bird()
-#         pipes = PipePair()
-
-#         fitness = 0
-#         while True:
-#             # get the network's output
-#             if pipes.sprites():
-#                 bottom_pipe = max(pipes.sprites(), key=lambda pipe: pipe.rect.bottom)
-#                 top_pipe = min(pipes.sprites(), key=lambda pipe: pipe.rect.top)
-#                 output = net.activate((bird.rect.center, abs(bird.rect.center - bottom_pipe.rect.bottom), abs(bird.rect.center - top_pipe.rect.top)))
-#             else:
-#                 output = net.activate((bird.rect.center, 600, 800))
-#             # make the bird jump if the network's output is greater than 0.5
-#             if output[0] > 0.5:
-#                 bird.jump()
-
-#             # update the game objects
-#             bird.update()
-#             pipes.update(bird)
-
-#             # check for collision
-#             if pygame.sprite.spritecollide(bird, pipes, False):
-#                 genome.fitness = fitness
-#                 break
-
-#             # increase fitness for each frame that the bird survives
-#             fitness += 1
-
-#             # update the display
-#             screen.blit(bg_img, (0, 0))
-#             bird.draw(screen)
-#             pipes.draw(screen)
-#             pygame.display.update()
-#             clock.tick(FPS)
-
-#         # set the genome's fitness score
-#         genome.fitness = fitness + (pipes.score * 100)
-
-# config = neat.Config(neat.DefaultGenome, neat.DefaultReproduction,
-#                             neat.DefaultSpeciesSet, neat.DefaultStagnation,
-#                             'flappy-bird-Python/config-feedforward.txt')
-
-# def run_neat(config):
-#     # create the population
-#     population = neat.Population(config)
-
-#     # add a stdout reporter to show progress in the terminal
-#     population.add_reporter(neat.StdOutReporter(True))
-#     stats = neat.StatisticsReporter()
-#     population.add_reporter(stats)
-
-#     # run the NEAT algorithm for up to 50 generations
-#     winner = population.run(eval_genomes, 50)
-
-#     # print the winning genome
-#     print('\nBest genome:\n{!s}'.format(winner))
-
-#     # show the winning bird in action
-#     net = neat.nn.FeedForwardNetwork.create(winner, config)
-#     bird = Bird()
-#     pipes = PipePair()
-#     while True:
-#         output = net.activate((bird.rect.center, abs(bird.rect.center - pipes.bottom), abs(bird.rect.center - pipes.top)))
-#         if output[0] > 0.5:
-#             bird.jump()
-#         bird.update()
-#         pipes.update(bird)
-#         screen.blit(bg_img, (0, 0))
-#         bird.draw(screen)
-#         pipes.draw(screen)
-#         pygame.display.update()
-#         clock.tick(FPS)
-
-import sys
-sys.path.append("C:\Python311\Lib\site-packages")
+import pygame
 import neat
 import os
-import pygame 
+import random
+import sys 
 from bird import Bird
+from pipe import Pipe
 from pipepair import PipePair
 
-# Set up the game window
-SCREEN_WIDTH = 600
-SCREEN_HEIGHT = 800
+# Set up game window
+WIDTH = 600
+HEIGHT = 800
+FPS = 60
+gravity = 0.5
+# Initialize pygame
 pygame.init()
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Flappy Bird")
 
-# Load the background image and set up the clock
+# Load images
 bg_img = pygame.image.load("flappy-bird-Python/images/background.png").convert()
-clock = pygame.time.Clock()
-FPS = 60
+bird_img = pygame.image.load("flappy-bird-Python/images/bird.png").convert()
 
-# Define the evaluation function
+pipe_img_top = pygame.image.load("flappy-bird-Python/images/fullPipeTop.png").convert()
+
+pipe_img_bottom = pygame.image.load("flappy-bird-Python/images/fullPipeBottom.png").convert()
+
+# Set up font
+font = pygame.font.SysFont(None, 48)
+
+# Set up clock
+clock = pygame.time.Clock()
+
+# Set up NEAT algorithm
 def eval_genomes(genomes, config):
-    birds = []
+    global generation
+    pipes = PipePair()
     nets = []
     ge = []
+    birds = []
+
     for genome_id, genome in genomes:
         net = neat.nn.FeedForwardNetwork.create(genome, config)
         nets.append(net)
-        bird = Bird()
-        birds.append(bird)
+        birds.append(Bird())
         genome.fitness = 0
         ge.append(genome)
 
-    pipes = PipePair()
-
-    while True:
+    while len(birds) > 0 and generation <= 50:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
 
         for i, bird in enumerate(birds):
-            # output = nets[i].activate((bird.rect.center[1], abs(bird.rect.center[1] - pipes.bottom), abs(bird.rect.center[1] - pipes.top)))
             if pipes.sprites():
                 bottom_pipe = max(pipes.sprites(), key=lambda pipe: pipe.rect.bottom)
                 top_pipe = min(pipes.sprites(), key=lambda pipe: pipe.rect.top)
                 output = nets[i].activate((bird.rect.center[1], abs(bird.rect.center[1] - bottom_pipe.rect.bottom), abs(bird.rect.center[1] - top_pipe.rect.top)))
-
             else:
                 output = nets[i].activate((bird.rect.center[1], 600, 800))
             if output[0] > 0.5:
@@ -140,14 +75,23 @@ def eval_genomes(genomes, config):
                 birds.pop(i)
 
         for i, bird in enumerate(birds):
-            if bird.rect.bottom >= SCREEN_HEIGHT or bird.rect.top <= 0:
+            if bird.rect.bottom >= HEIGHT or bird.rect.top <= 0:
                 ge[i].fitness -= 1
                 nets.pop(i)
                 ge.pop(i)
                 birds.pop(i)
 
         for i, genome in enumerate(ge):
-            genome.fitness += 1
+            genome.fitness += 0.1
+        
+        for i, bird in enumerate(birds):
+            if pipes.sprites():
+                next_pipe = min(pipes.sprites(), key=lambda pipe: pipe.rect.left if pipe.rect.left > bird.rect.right else WIDTH)
+                if next_pipe.rect.left > bird.rect.right:
+                    ge[i].fitness += 1
+
+        if len(birds) == 0:
+            break
 
         screen.blit(bg_img, (0, 0))
         for bird in birds:
@@ -156,43 +100,71 @@ def eval_genomes(genomes, config):
         pygame.display.update()
         clock.tick(FPS)
 
-        if len(birds) == 0:
+    print(f"Generation {generation} complete")
+    generation += 1
+
+    # Reset game objects
+    pipes.reset()
+    nets = []
+    ge = []
+    birds = []
+
+    # Create new population of birds
+    for genome_id, genome in genomes:
+        net = neat.nn.FeedForwardNetwork.create(genome, config)
+        nets.append(net)
+        birds.append(Bird())
+        genome.fitness = 0
+        ge.append(genome)
+
+# Set up NEAT configuration
+local_dir = os.path.dirname(__file__)
+config_path = os.path.join(local_dir, 'NEAT_config.txt')
+config = neat.config.Config(neat.DefaultGenome, neat.DefaultReproduction, neat.DefaultSpeciesSet, neat.DefaultStagnation, config_path)
+
+# Set up NEAT population
+p = neat.Population(config)
+
+# Add reporters to output statistics during training
+p.add_reporter(neat.StdOutReporter(True))
+stats = neat.StatisticsReporter()
+p.add_reporter(stats)
+
+# Run NEAT algorithm
+generation = 1
+winner = p.run(eval_genomes)
+
+# Play game with winning network
+if winner:
+    net = neat.nn.FeedForwardNetwork.create(winner, config)
+    bird = Bird()
+    pipes = PipePair()
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+
+        if pipes.sprites():
+            bottom_pipe = max(pipes.sprites(), key=lambda pipe: pipe.rect.bottom)
+            top_pipe = min(pipes.sprites(), key=lambda pipe: pipe.rect.top)
+            output = net.activate((bird.rect.center[1], abs(bird.rect.center[1] - bottom_pipe.rect.bottom), abs(bird.rect.center[1] - top_pipe.rect.top)))
+        else:
+            output = net.activate((bird.rect.center[1], 600, 800))
+        if output[0] > 0.5:
+            bird.jump()
+
+        bird.update()
+        pipes.update(bird)
+
+        if pygame.sprite.spritecollide(bird, pipes, False):
             break
 
+        screen.blit(bg_img, (0, 0))
+        bird.draw(screen)
+        pipes.draw(screen)
+        pygame.display.update()
+        clock.tick(FPS)
 
-# Set up the NEAT configuration and population
-config_file = "flappy-bird-Python/config-feedforward.txt"
-config = neat.config.Config(neat.DefaultGenome, neat.DefaultReproduction, neat.DefaultSpeciesSet, neat.DefaultStagnation, config_file)
-print(123,config)
-population = neat.Population(config)
-
-# Add reporters to show progress during training
-population.add_reporter(neat.StdOutReporter(True))
-stats = neat.StatisticsReporter()
-population.add_reporter(stats)
-
-# Run the NEAT algorithm for up to 50 generations
-winner = population.run(eval_genomes, 50)
-
-# Print the winning genome
-print('\nBest genome:\n{!s}'.format(winner))
-
-# Show the winning bird in action
-net = neat.nn.FeedForwardNetwork.create(winner, config)
-bird = Bird()
-pipes = PipePair()
-while True:
-    if pipes.sprites():
-        bottom_pipe = max(pipes.sprites(), key=lambda pipe: pipe.rect.bottom)
-        top_pipe = min(pipes.sprites(), key=lambda pipe: pipe.rect.top)
-        output = nets[i].activate((bird.rect.center[1], abs(bird.rect.center[1] - bottom_pipe.rect.bottom), abs(bird.rect.center[1] - top_pipe.rect.top)))
-    else:
-        output = nets[i].activate((bird.rect.center[1], 600, 800))
-    if output[0] > 0.5:
-        bird.jump()
-    bird.update()
-    pipes.update()
-    screen.blit(bg_img, (0, 0))
-    bird.draw(screen)
-    pipes.draw(screen)
-    pygame.display.update()
+    pygame.quit()
+    sys.exit()
