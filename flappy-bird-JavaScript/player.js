@@ -80,4 +80,3 @@ class Player {
     return distance < this.radius + obstacle.width / 2;
   }
 }
-/* eslint-disable */
