@@ -45,3 +45,4 @@ class PipePair(pygame.sprite.Group):
         self.score = 0
         self.pipes_passed = 0
         self.last_spawn_time = pygame.time.get_ticks()
+        
