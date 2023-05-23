@@ -5,9 +5,6 @@
 	"main": "appaa.js",
 	"author": "Panospro",
 	"license": "ISC",
-	"bugs": {
-		"url": "aa"
-	},
 	"homepage": "aaa",
 	"dependencies": {
 		"@sentry/tracing": "^7.31.1",
