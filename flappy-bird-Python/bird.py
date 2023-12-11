@@ -10,7 +10,7 @@ pygame.init()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Flappy Bird")
 
-# load bird image
+# Load bird image 
 bird_img = pygame.image.load("flappy-bird-Python/images/bird.png").convert_alpha()
 
 # Define the bird class
