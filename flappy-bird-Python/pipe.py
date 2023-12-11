@@ -8,7 +8,7 @@ gravity = 0.25
 pygame.init()
 pygame.display.set_caption("Flappy Bird")
 
-# load pipe image
+# Load pipe image
 pipe_img_top = pygame.image.load("flappy-bird-Python/images/fullPipeTop.png").convert_alpha()
 pipe_img_bottom = pygame.image.load("flappy-bird-Python/images/fullPipeBottom.png").convert_alpha()
 
