@@ -28,3 +28,4 @@ class Pipe(pygame.sprite.Sprite):
     
     def get_height(self):
         return self.rect.bottom
+        
