@@ -44,3 +44,4 @@ class Bird(pygame.sprite.Sprite):
     def reset(self):
         self.rect.center = (150, HEIGHT/4)
         self.velocity = 0
+
